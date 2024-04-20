@@ -274,7 +274,7 @@ namespace Stockfish::Tools {
             code |= stream.read_one_bit() << bits;
             ++bits;
 
-            assert(bits <= 9);
+            assert(bits <= 10);
 
             for (pr = NO_PIECE_TYPE; pr <= 26; ++pr)
                 if (huffman_table[pr].code == code
