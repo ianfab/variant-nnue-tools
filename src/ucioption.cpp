@@ -100,7 +100,7 @@ void on_variant_change(const Option &o) {
     const int typeCount = popcount(v->pieceTypes);
     const int typeCount5bits = (typeCount > 15) ? 15 : typeCount;
     const int typeCount9bits = typeCount - typeCount5bits;
-    const int dataSize = (v->maxFile + 1) * (v->maxRank + 1) + v->nnueMaxPieces * 5
+    const int dataSize = (v->maxFile + 1) * (v->maxRank + 1) + v->nnueMaxPieces * (typeCount > 15 ? 9 : 5)
                         + typeCount5bits * 2 * 5 + typeCount9bits * 2 * 9
                         + 50 > 512 ? 1024 : 512;
 
