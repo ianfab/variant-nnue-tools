@@ -159,7 +159,22 @@ namespace Stockfish::Tools {
         {0b11001,5}, //
         {0b11011,5}, //
         {0b11101,5}, //
-        {0b11111,5}, //
+        {0b000011111,9}, //
+        {0b000111111,9}, //
+        {0b001011111,9}, //
+        {0b001111111,9}, //
+        {0b010011111,9}, //
+        {0b010111111,9}, //
+        {0b011011111,9}, //
+        {0b011111111,9}, //
+        {0b100011111,9}, //
+        {0b100111111,9}, //
+        {0b101011111,9}, //
+        {0b101111111,9}, // RESERVED
+        {0b110011111,9}, // RESERVED
+        {0b110111111,9}, // RESERVED
+        {0b111011111,9}, // RESERVED
+        {0b111111111,9}, // RESERVED
     };
 
     inline Square to_variant_square(Square s, const Position& pos) {
@@ -259,9 +274,9 @@ namespace Stockfish::Tools {
             code |= stream.read_one_bit() << bits;
             ++bits;
 
-            assert(bits <= 6);
+            assert(bits <= 9);
 
-            for (pr = NO_PIECE_TYPE; pr <= 16; ++pr)
+            for (pr = NO_PIECE_TYPE; pr <= 26; ++pr)
                 if (huffman_table[pr].code == code
                     && huffman_table[pr].bits == bits)
                     goto Found;
