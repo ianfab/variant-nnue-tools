@@ -106,7 +106,7 @@ void on_variant_change(const Option &o) {
                   << "Please recompile with largedata=yes" << std::endl << std::endl;
 
     std::cerr<< std::endl
-    << "------ lib/nnue_training_data_formats.h --------" << std::endl
+    << "---------------- variant.h ---------------------" << std::endl
     << "#define FILES " << v->maxFile + 1 << std::endl
     << "#define RANKS " << v->maxRank + 1 << std::endl
     << "#define PIECE_TYPES " << popcount(v->pieceTypes) << std::endl
