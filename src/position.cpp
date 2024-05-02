@@ -2570,7 +2570,7 @@ bool Position::see_ge(Move m, Value threshold) const {
   return bool(res);
 }
 
-/// Position::is_optinal_game_end() tests whether the position may end the game by
+/// Position::is_optional_game_end() tests whether the position may end the game by
 /// 50-move rule, by repetition, or a variant rule that allows a player to claim a game result.
 
 bool Position::is_optional_game_end(Value& result, int ply, int countStarted) const {

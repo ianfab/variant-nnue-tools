@@ -153,7 +153,7 @@ private:
 
 // This logger allows printing many parts in a region atomically
 // but doesn't block the threads trying to append to other regions.
-// Instead if some region tries to pring while other region holds
+// Instead if some region tries to print while other region holds
 // the lock the messages are queued to be printed as soon as the
 // current region releases the lock.
 struct SynchronizedRegionLogger
