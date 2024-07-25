@@ -97,12 +97,10 @@ void on_variant_change(const Option &o) {
 
     const Variant* v = variants.find(o)->second;
 
-    const int typeCount = popcount(v->pieceTypes);
-    const int typeCount5bits = (typeCount > 15) ? 15 : typeCount;
-    const int typeCount9bits = typeCount - typeCount5bits;
-    const int dataSize = (v->maxFile + 1) * (v->maxRank + 1) + v->nnueMaxPieces * (typeCount > 15 ? 9 : 5)
-                        + typeCount5bits * 2 * 5 + typeCount9bits * 2 * 9
-                        + 50 > 512 ? 1024 : 512;
+    const int pieceTypeCount = popcount(v->pieceTypes);
+    const int pieceTypeCountBits = std::ceil( std::log2(pieceTypeCount));
+    const int dataSize = (v->maxFile + 1) * (v->maxRank + 1)+ v->nnueMaxPieces * 5
+                        + pieceTypeCount * 2 * pieceTypeCountBits + 50 > 512 ? 1024 : 512;
 
     if (dataSize > DATA_SIZE)
         std::cerr << std::endl << "Warning: Recommended training data size " << dataSize
@@ -113,7 +111,8 @@ void on_variant_change(const Option &o) {
     << "---------------- variant.h ---------------------" << std::endl
     << "#define FILES " << v->maxFile + 1 << std::endl
     << "#define RANKS " << v->maxRank + 1 << std::endl
-    << "#define PIECE_TYPES " << popcount(v->pieceTypes) << std::endl
+    << "#define PIECE_TYPES " << pieceTypeCount << std::endl
+    << "#define PIECE_TYPE_BITS " << pieceTypeCountBits << std::endl
     << "#define PIECE_COUNT " << v->nnueMaxPieces << std::endl
     << "#define POCKETS " << (v->nnueUsePockets ? "true" : "false") << std::endl
     << "#define KING_SQUARES " << v->nnueKingSquare << std::endl
