@@ -15,7 +15,8 @@ namespace Stockfish::Tools {
     enum struct SfenOutputType
     {
         Bin,
-        Binpack
+        Binpack,
+        Bin2,
     };
 
     static bool ends_with(const std::string& lhs, const std::string& end)

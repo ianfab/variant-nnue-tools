@@ -821,6 +821,8 @@ namespace Stockfish::Tools
         {
             if (sfen_format == "bin")
                 params.sfen_format = SfenOutputType::Bin;
+            else if (sfen_format == "bin2")
+                params.sfen_format = SfenOutputType::Bin2;
             else if (sfen_format == "binpack")
                 params.sfen_format = SfenOutputType::Binpack;
             else
