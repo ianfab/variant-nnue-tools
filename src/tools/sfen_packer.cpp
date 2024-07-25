@@ -281,7 +281,7 @@ namespace Stockfish::Tools {
     {
         // piece type
         PieceType pr = PieceType(pc == NO_PIECE ? NO_PIECE_TYPE : pos.variant()->pieceIndex[type_of(pc)] + 1);
-        auto c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
+        HuffmanedPiece c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
         stream.write_n_bit(c.code, c.bits);
 
         if (pc == NO_PIECE)
@@ -295,7 +295,7 @@ namespace Stockfish::Tools {
     Piece SfenPacker::read_board_piece_from_stream(const Position& pos)
     {
         PieceType pr = NO_PIECE_TYPE;
-        auto c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
+        HuffmanedPiece c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
         int code = 0, bits = 0;
         while (true)
         {
