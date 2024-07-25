@@ -295,6 +295,7 @@ namespace Stockfish::Tools {
     Piece SfenPacker::read_board_piece_from_stream(const Position& pos)
     {
         PieceType pr = NO_PIECE_TYPE;
+        HuffmanedPiece hp;
         int code = 0, bits = 0;
         while (true)
         {
@@ -304,10 +305,11 @@ namespace Stockfish::Tools {
             assert(bits <= ((pieceTypeCount > 16) ? 7 : 6 ));
 
             for (pr = NO_PIECE_TYPE; pr <= 26; ++pr)
-                auto c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
-                if (c.code == code
-                    && c.bits == bits)
+            {
+                hp = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
+                if (hp.code == code && hp.bits == bits)
                     goto Found;
+            }
         }
     Found:;
         if (pr == NO_PIECE_TYPE)
