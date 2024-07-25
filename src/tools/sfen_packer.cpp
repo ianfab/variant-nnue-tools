@@ -104,7 +104,7 @@ namespace Stockfish::Tools {
 
         BitStream stream;
 
-        // Used to determine how many bits per piece to write.
+        // Used to determine how many bits per piece to write/read.
         int pieceTypeCount;
 
         // Output the board pieces to stream.
@@ -295,17 +295,18 @@ namespace Stockfish::Tools {
     Piece SfenPacker::read_board_piece_from_stream(const Position& pos)
     {
         PieceType pr = NO_PIECE_TYPE;
+        auto c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
         int code = 0, bits = 0;
         while (true)
         {
             code |= stream.read_one_bit() << bits;
             ++bits;
 
-            assert(bits <= 7);
+            assert(bits <= ((pieceTypeCount > 16) ? 7 : 6 ));
 
             for (pr = NO_PIECE_TYPE; pr <= 26; ++pr)
-                if (huffman_table[pr].code == code
-                    && huffman_table[pr].bits == bits)
+                if (c[pr].code == code
+                    && c[pr].bits == bits)
                     goto Found;
         }
     Found:;
@@ -340,6 +341,7 @@ namespace Stockfish::Tools {
         si->accumulator.computed[BLACK] = false;
         pos.st = si;
         pos.var = variants.find(Options["UCI_Variant"])->second;
+
 
         // Active color
         pos.sideToMove = (Color)stream.read_one_bit();
