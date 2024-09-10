@@ -104,6 +104,9 @@ namespace Stockfish::Tools {
 
         BitStream stream;
 
+        // Used to determine how many bits per piece to write/read.
+        int pieceTypeCount;
+
         // Output the board pieces to stream.
         void write_board_piece_to_stream(const Position& pos, Piece pc);
 
@@ -141,7 +144,7 @@ namespace Stockfish::Tools {
         int bits; // How many bits do you have
     };
 
-    constexpr HuffmanedPiece huffman_table[] =
+    constexpr HuffmanedPiece huffman_table5[] =
     {
         {0b00000,1}, // NO_PIECE
         {0b00001,5}, // PAWN
@@ -162,6 +165,43 @@ namespace Stockfish::Tools {
         {0b11111,5}, //
     };
 
+    constexpr HuffmanedPiece huffman_table6[] =
+    {
+        {0b000000,1}, // NO_PIECE
+        {0b000001,6}, // PAWN
+        {0b000011,6}, // KNIGHT
+        {0b000101,6}, // BISHOP
+        {0b000111,6}, // ROOK
+        {0b001001,6}, // QUEEN
+        {0b001011,6}, //
+        {0b001101,6}, //
+        {0b001111,6}, //
+        {0b010001,6}, //
+        {0b010011,6}, //
+        {0b010101,6}, //
+        {0b010111,6}, //
+        {0b011001,6}, //
+        {0b011011,6}, //
+        {0b011101,6}, //
+        {0b011111,6}, //
+        {0b100001,6}, //
+        {0b100011,6}, //
+        {0b100101,6}, //
+        {0b100111,6}, //
+        {0b101001,6}, //
+        {0b101011,6}, //
+        {0b101101,6}, //
+        {0b101111,6}, //
+        {0b110001,6}, //
+        {0b110011,6}, //
+        {0b110101,6}, //
+        {0b110111,6}, //
+        {0b111001,6}, //
+        {0b111011,6}, //
+        {0b111101,6}, //
+        {0b111111,6}, //
+    };
+
     inline Square to_variant_square(Square s, const Position& pos) {
         return Square(s - rank_of(s) * (FILE_MAX - pos.max_file()));
     }
@@ -173,6 +213,8 @@ namespace Stockfish::Tools {
     // Pack sfen and store in data[64].
     void SfenPacker::pack(const Position& pos)
     {
+        pieceTypeCount = popcount(pos.variant()->pieceTypes);
+
         memset(data, 0, DATA_SIZE / 8 /* 512bit */);
         stream.set_data(data);
 
@@ -239,7 +281,7 @@ namespace Stockfish::Tools {
     {
         // piece type
         PieceType pr = PieceType(pc == NO_PIECE ? NO_PIECE_TYPE : pos.variant()->pieceIndex[type_of(pc)] + 1);
-        auto c = huffman_table[pr];
+        auto c = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
         stream.write_n_bit(c.code, c.bits);
 
         if (pc == NO_PIECE)
@@ -253,18 +295,21 @@ namespace Stockfish::Tools {
     Piece SfenPacker::read_board_piece_from_stream(const Position& pos)
     {
         PieceType pr = NO_PIECE_TYPE;
+        HuffmanedPiece hp;
         int code = 0, bits = 0;
         while (true)
         {
             code |= stream.read_one_bit() << bits;
             ++bits;
 
-            assert(bits <= 6);
+            assert(bits <= ((pieceTypeCount > 16) ? 7 : 6 ));
 
-            for (pr = NO_PIECE_TYPE; pr <= 16; ++pr)
-                if (huffman_table[pr].code == code
-                    && huffman_table[pr].bits == bits)
+            for (pr = NO_PIECE_TYPE; pr <= 26; ++pr)
+            {
+                hp = (pieceTypeCount > 16) ? huffman_table6[pr] : huffman_table5[pr];
+                if (hp.code == code && hp.bits == bits)
                     goto Found;
+            }
         }
     Found:;
         if (pr == NO_PIECE_TYPE)
@@ -298,6 +343,7 @@ namespace Stockfish::Tools {
         si->accumulator.computed[BLACK] = false;
         pos.st = si;
         pos.var = variants.find(Options["UCI_Variant"])->second;
+
 
         // Active color
         pos.sideToMove = (Color)stream.read_one_bit();
